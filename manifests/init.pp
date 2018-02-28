@@ -193,7 +193,7 @@ class galera(
   $create_status_user             = true,
   $override_options               = {},
   $vendor_type                    = 'percona',
-  $vendor_version                 = '5.7',
+  $vendor_version                 = undef,
   $configure_repo                 = true,
   $configure_firewall             = true,
   $deb_sysmaint_password          = 'sysmaint',

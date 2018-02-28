@@ -32,8 +32,8 @@ class galera::repo(
     default  => 'http://releases.galeracluster.com/galera-3/ubuntu',
   },
   $apt_codership_wsrep_repo_location = $::operatingsystem ? {
-    'Debian' => 'http://releases.galeracluster.com/mysql-wsrep-5.7/debian',
-    default  => 'http://releases.galeracluster.com/mysql-wsrep-5.7/ubuntu',
+    'Debian' => "http://releases.galeracluster.com/mysql-wsrep-${galera::vendor_version}/debian",
+    default  => "http://releases.galeracluster.com/mysql-wsrep-${galera::vendor_version}/ubuntu",
   },
   $apt_codership_repo_release      = $::lsbdistcodename,
   $apt_codership_repo_repos        = 'main',
@@ -115,9 +115,16 @@ class galera::repo(
             },
             notify   => Exec['apt_update'],
           }
+
+          $wsrep_release = (($::lsbdistcodename == 'xenial') and
+                            ($galera::vendor_version == '5.5')) ? {
+            true    => 'trusty',
+            default => $apt_codership_repo_release,
+          }
+
           apt::source { 'wsrep_codership_repo':
             location => $apt_codership_wsrep_repo_location,
-            release  => $apt_codership_repo_release,
+            release  => $wsrep_release,
             repos    => $apt_codership_repo_repos,
             key      => {
               'id'     => $apt_codership_repo_key,
@@ -126,10 +133,10 @@ class galera::repo(
             include  => {
               'src' => $apt_codership_repo_include_src,
             },
-           notify   => Exec['apt_update'],
+            notify   => Exec['apt_update'],
           }
-        Exec['apt_update'] -> Package<||>
-      }
+          Exec['apt_update'] -> Package<||>
+        }
       if ($repo_vendor == 'osp5') {
         fail('OSP5 is only supported on RHEL platforms.')
       }
