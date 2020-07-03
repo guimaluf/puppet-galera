@@ -24,7 +24,7 @@ class galera::repo(
   $apt_mariadb_repo_include_src = false,
 
   # Ubuntu/codership
-  $apt_codership_repo_location     = 'http://releases.galeracluster.com/galera-3/ubuntu',
+  $apt_codership_repo_location     = 'http://releases.galeracluster.com/galera-3.25/ubuntu',
   $apt_codership_repo_release      = $::lsbdistcodename,
   $apt_codership_repo_repos        = 'main',
   $apt_codership_repo_key          = 'BC19DDBA',
@@ -85,6 +85,15 @@ class galera::repo(
         } elsif ($repo_vendor == 'codership') {
           apt::source { 'galera_codership_repo':
             location          => $apt_codership_repo_location,
+            release           => $apt_codership_repo_release,
+            repos             => $apt_codership_repo_repos,
+            key               => $apt_codership_repo_key,
+            key_server        => $apt_codership_repo_key_server,
+            include_src       => $apt_codership_repo_include_src,
+          }
+
+          apt::source { 'wsrep_codership_repo':
+            location          => 'http://releases.galeracluster.com/mysql-wsrep-5.5/ubuntu',
             release           => $apt_codership_repo_release,
             repos             => $apt_codership_repo_repos,
             key               => $apt_codership_repo_key,
